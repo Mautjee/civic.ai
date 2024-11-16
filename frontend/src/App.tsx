@@ -1,14 +1,18 @@
 import "./App.css";
-import { Submit } from "@/components/submit";
+import { execHaloCmdWeb } from "@arx-research/libhalo/api/web";
+import { Submit } from "./components/submit";
+import { Button } from "./components/ui/button";
+import { Textarea } from "./components/ui/textarea";
+import Header from "./components/header";
+import Noun from "./components/noun";
 
 function App() {
   return (
-    <div className="flex flex-col overflow-auto min-h-screen flex-grow">
-      <div className="flex-grow">
-        <div className="mx-auto p-3 max-w-[1440px] md:px-[70px]">
-          <Submit />
-        </div>
-      </div>
+    <div className="flex flex-col">
+      <Header />
+      <Noun/>
+      <Textarea />
+      <Button>Submit</Button>
     </div>
   );
 }

@@ -1,0 +1,3 @@
+- you need to put the variables to environmental variables. somehow dotenv doesnt work properly, somewhere down the chain the keys arent passed properly maybe not sure
+- Ahmed and John thinks good idea to see signing stuff shown in https://docs.cdp.coinbase.com/agentkit/docs/add-agent-capabilities . sign the user review wit MCP and put the signature somewhere, maybe in tweet. tried but didnt manage to run
+- example chatbot: https://replit.com/@lincolnmurr/X-Twitter-x-AgentKit?v=1#chatbot.py

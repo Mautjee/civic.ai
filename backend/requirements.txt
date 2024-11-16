@@ -1,0 +1,11 @@
+flask
+logging
+openai
+python-dotenv
+langchain_community
+flask_cors
+lxml_html_clean
+tweepy
+apscheduler
+gunicorn
+python-dotenv

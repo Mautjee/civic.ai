@@ -22,28 +22,6 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
 client = Client("http://localhost:8080")
 
-schema = {
-    "classes": [
-        {
-            "class": "Feedbacks",
-            "description": "A class to store user reviews with embeddings and timestamps",
-            "properties": [
-                {
-                    "name": "text",
-                    "dataType": ["text"],
-                    "description": "The content of the user review"
-                },
-                {
-                    "name": "timestamp",
-                    "dataType": ["date"],
-                    "description": "The time the review was submitted"
-                }
-            ]
-        }
-    ]
-}
-
-client.schema.create(schema)
 model = SentenceTransformer('all-MiniLM-L6-v2')
 
 app = Flask(__name__)
@@ -121,6 +99,38 @@ def generate_feedbacks():
 
     return jsonify({"status": 200, "publish": True, "message": output})
 
+@app.route('/ask', methods=['POST'])
+def ask():
+    data = request.json
+    if not data or 'question' not in data:
+        return jsonify({"error": "Invalid input. 'question' is required."}), 400
+
+    question = data['question']
+    query_embedding = model.encode(question).tolist()
+    result = client.query.get("Feedbacks", ["text", "timestamp"]).with_near_vector({
+        "vector": query_embedding,
+        "certainty": 0.7
+    }).with_limit(5).do()
+
+    if result and result['data']['Get']['Feedbacks']:
+        all_feedbacks_text = " | ".join([feedback['text'] for feedback in result['data']['Get']['Feedbacks']])
+
+        preprompt = """
+            Answer the question with a concise summary, and using the feedback as context.
+            """
+        template = """
+            {preprompt}
+
+            Question: {question}
+            Feedback: {feedback}
+            """
+        prompt_template = PromptTemplate(input_variables=["preprompt", "question", "feedback"], template=template)
+        prompt = prompt_template.format(preprompt=preprompt, question=question, feedback=all_feedbacks_text)
+        llm = ChatOpenAI(model="gpt-4o-mini")
+        chain = LLMChain(llm=llm, prompt=prompt_template)
+        output = chain.run({"preprompt": prompt, "question": question, "feedback": all_feedbacks_text})
+        return jsonify({"status": 200, "message": output})
+    return jsonify({"status": 200, "message": "No similar reviews found."})
 
 if __name__ == '__main__':
     app.run(debug=True)

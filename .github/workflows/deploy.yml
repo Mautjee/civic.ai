@@ -26,10 +26,10 @@ jobs:
 
     - name: Transfer code to GCP instance
       run: |
-        sshpass -p "${{ vars.GCP_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ vars.GCP_USER }}@${{ vars.GCP_INSTANCE_IP }} "mkdir -p /home/shared/civic.ai/backend"
-        sshpass -p "${{ vars.GCP_PASSWORD }}" scp -o StrictHostKeyChecking=no -r ./backend ${{ vars.GCP_USER }}@${{ vars.GCP_INSTANCE_IP }}:/home/shared/civic.ai/backend
-        sshpass -p "${{ vars.GCP_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ vars.GCP_USER }}@${{ vars.GCP_INSTANCE_IP }} "mkdir -p /home/shared/civic.ai/frontend"
-        sshpass -p "${{ vars.GCP_PASSWORD }}" scp -o StrictHostKeyChecking=no -r ./frontend ${{ vars.GCP_USER }}@${{ vars.GCP_INSTANCE_IP }}:/home/shared/civic.ai/frontend
+        sshpass -p "${{ vars.GCP_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ vars.GCP_USER }}@${{ vars.GCP_INSTANCE_IP }} "mkdir -p /home/shared/civic.ai/"
+        sshpass -p "${{ vars.GCP_PASSWORD }}" scp -o StrictHostKeyChecking=no -r ./backend ${{ vars.GCP_USER }}@${{ vars.GCP_INSTANCE_IP }}:/home/shared/civic.ai/
+        sshpass -p "${{ vars.GCP_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ vars.GCP_USER }}@${{ vars.GCP_INSTANCE_IP }} "mkdir -p /home/shared/civic.ai/"
+        sshpass -p "${{ vars.GCP_PASSWORD }}" scp -o StrictHostKeyChecking=no -r ./frontend ${{ vars.GCP_USER }}@${{ vars.GCP_INSTANCE_IP }}:/home/shared/civic.ai/
 
     - name: kill the current running process
       run: |

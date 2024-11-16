@@ -56,8 +56,8 @@ jobs:
           python3 -m venv venv
           source venv/bin/activate
           pip install -r requirements.txt
-          docker-compose down
-          docker-compose up -d
+          echo "${{ vars.GCP_PASSWORD }}" | sudo docker-compose down
+          echo "${{ vars.GCP_PASSWORD }}" | sudo docker-compose up -d
           sleep 10
           python3 create_schema.py
           nohup gunicorn -w 4 wsgi:app --bind 0.0.0.0:3002 > backend.log 2>&1 &

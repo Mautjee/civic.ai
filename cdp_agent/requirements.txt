@@ -1,0 +1,6 @@
+cdp-langchain
+python-dotenv
+twitter-langchain
+weaviate-client==3.26.7
+numpy
+sentence_transformers

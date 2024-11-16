@@ -31,6 +31,7 @@ function App() {
           Sign message 010203 using key #1
         </button>
       </header>
+      <div></div>
     </div>
   );
 }

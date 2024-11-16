@@ -1,6 +1,6 @@
-import weaviate
+from weaviate import Client
 
-client = weaviate.Client("http://localhost:8080")
+client = Client("http://localhost:8080")
 
 # Define the schema
 schema = {

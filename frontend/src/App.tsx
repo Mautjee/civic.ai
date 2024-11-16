@@ -1,33 +1,14 @@
 import "./App.css";
-import { execHaloCmdWeb } from "@arx-research/libhalo/api/web";
-import { Submit } from "./components/submit";
-import { Button } from "./components/ui/button";
-import { Textarea } from "./components/ui/textarea";
+import { Submit } from "@/components/submit";
 
 function App() {
-  async function btnClick() {
-    let command = {
-      name: "sign",
-      keyNo: 1,
-      message: "010203",
-    };
-
-    let res;
-
-    try {
-      // --- request NFC command execution ---
-      res = await execHaloCmdWeb(command);
-      // the command has succeeded, display the result to the user
-      console.log(JSON.stringify(res, null, 4));
-    } catch (e) {
-      // the command has failed, display error to the user
-      console.log("Error: " + String(e));
-    }
-  }
   return (
-    <div className="flex flex-col w-screen h-screen">
-      <Textarea />
-      <Button>Submit</Button>
+    <div className="flex flex-col overflow-auto min-h-screen flex-grow">
+      <div className="flex-grow">
+        <div className="mx-auto p-3 max-w-[1440px] md:px-[70px]">
+          <Submit />
+        </div>
+      </div>
     </div>
   );
 }

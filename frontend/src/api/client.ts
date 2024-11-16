@@ -1,6 +1,6 @@
 import axios, { type AxiosError } from "axios";
 import { type z } from "zod";
-import { API_URL } from "~/service/constants";
+import { API_URL } from "@/constants";
 
 const client = axios.create({
   baseURL: API_URL,

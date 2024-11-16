@@ -1,6 +1,8 @@
 import "./App.css";
 import { execHaloCmdWeb } from "@arx-research/libhalo/api/web";
 import { Submit } from "./components/submit";
+import { Button } from "./components/ui/button";
+import { Textarea } from "./components/ui/textarea";
 
 function App() {
   async function btnClick() {
@@ -23,10 +25,9 @@ function App() {
     }
   }
   return (
-    <div className="App">
-      <div>
-        <Submit />
-      </div>
+    <div className="flex flex-col w-screen h-screen">
+      <Textarea />
+      <Button>Submit</Button>
     </div>
   );
 }

@@ -8,3 +8,5 @@ tweepy
 apscheduler
 gunicorn
 python-dotenv
+weaviate-client
+sentence_transformers

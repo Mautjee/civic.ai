@@ -59,8 +59,8 @@ jobs:
           nohup gunicorn -w 4 wsgi:app --bind 0.0.0.0:3002 > backend.log 2>&1 &
 
           cd ../frontend
-          npm install
-          npm run build
+          yarn install
+          yarn run build
           nohup serve -s dist -l 3001 > frontend.log 2>&1 &
 
           cd ..

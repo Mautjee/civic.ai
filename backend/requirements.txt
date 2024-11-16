@@ -1,5 +1,4 @@
 flask
-logging
 openai
 python-dotenv
 langchain_community

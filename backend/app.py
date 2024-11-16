@@ -8,18 +8,24 @@ from langchain_community.chat_models import ChatOpenAI
 from langchain.chains import LLMChain
 
 from apscheduler.schedulers.background import BackgroundScheduler
+from datetime import datetime
+from sentence_transformers import SentenceTransformer
 
 import openai
 import requests
 import os
+from weaviate import Client
 
 load_dotenv()
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
+client = Client("http://localhost:8080")
+
+model = SentenceTransformer('all-MiniLM-L6-v2')
+
 app = Flask(__name__)
 CORS(app)
-all_feedbacks = ""
 
 def call_generate_feedbacks():
     try:
@@ -40,24 +46,32 @@ scheduler.start()
 
 @app.route('/feed-database', methods=['POST'])
 def feed_database():
-    global all_feedbacks
     data = request.json
     if not data or 'message' not in data:
         return jsonify({"error": "Invalid input. 'message' is required."}), 400
 
     message = data['message']
+    review_timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+    review_embedding = model.encode(message).tolist()
 
-    all_feedbacks += message + " | "
-    print(all_feedbacks)
+    client.data_object.create(
+        {
+            "text": message,
+            "timestamp": review_timestamp
+        },
+        "Feedbacks",
+        vector=review_embedding
+    )
+
     return jsonify({"message": "Message added successfully."}), 201
 
 
 @app.route('/generate-feedbacks', methods=['GET'])
 def generate_feedbacks():
-    global all_feedbacks
 
-    if not all_feedbacks:
-        return jsonify({"status": 200, "publish": False, "message": "No feedbacks available."})
+    result = client.query.get("Feedbacks", ["text"]).with_limit(1000).do()
+    feedback_texts = [feedback['text'] for feedback in result['data']['Get']['Feedbacks']]
+    all_feedbacks_text = " | ".join(feedback_texts)
 
     preprompt = """
     You are a reporter about the ETH global hackathon in bangkok. You have received feedback from your users about the event.
@@ -72,21 +86,51 @@ def generate_feedbacks():
     Feedbacks: {feedbacks}
     """
 
-    feedbacks = all_feedbacks
-
     prompt_template = PromptTemplate(input_variables=["preprompt", "feedbacks"], template=template)
 
 
 
 
-    prompt = prompt_template.format(preprompt=preprompt, feedbacks=feedbacks)
+    prompt = prompt_template.format(preprompt=preprompt, feedbacks=all_feedbacks_text)
     llm = ChatOpenAI(model="gpt-4o-mini")
     chain = LLMChain(llm=llm, prompt=prompt_template)
-    output = chain.run({"preprompt": prompt, "feedbacks": feedbacks})
+    output = chain.run({"preprompt": prompt, "feedbacks": all_feedbacks_text})
 
 
     return jsonify({"status": 200, "publish": True, "message": output})
 
+@app.route('/ask', methods=['POST'])
+def ask():
+    data = request.json
+    if not data or 'question' not in data:
+        return jsonify({"error": "Invalid input. 'question' is required."}), 400
+
+    question = data['question']
+    query_embedding = model.encode(question).tolist()
+    result = client.query.get("Feedbacks", ["text", "timestamp"]).with_near_vector({
+        "vector": query_embedding,
+        "certainty": 0.7
+    }).with_limit(5).do()
+
+    if result and result['data']['Get']['Feedbacks']:
+        all_feedbacks_text = " | ".join([feedback['text'] for feedback in result['data']['Get']['Feedbacks']])
+
+        preprompt = """
+            Answer the question with a concise summary, and using the feedback as context.
+            """
+        template = """
+            {preprompt}
+
+            Question: {question}
+            Feedback: {feedback}
+            """
+        prompt_template = PromptTemplate(input_variables=["preprompt", "question", "feedback"], template=template)
+        prompt = prompt_template.format(preprompt=preprompt, question=question, feedback=all_feedbacks_text)
+        llm = ChatOpenAI(model="gpt-4o-mini")
+        chain = LLMChain(llm=llm, prompt=prompt_template)
+        output = chain.run({"preprompt": prompt, "question": question, "feedback": all_feedbacks_text})
+        return jsonify({"status": 200, "message": output})
+    return jsonify({"status": 200, "message": "No similar reviews found."})
 
 if __name__ == '__main__':
     app.run(debug=True)

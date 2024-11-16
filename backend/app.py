@@ -20,7 +20,7 @@ load_dotenv()
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-client = Client("http://localhost:8080")
+client = Client("http://35.233.164.207:8080")
 
 model = SentenceTransformer('all-MiniLM-L6-v2')
 
@@ -29,7 +29,7 @@ CORS(app)
 
 def call_generate_feedbacks():
     try:
-        response = requests.get("http://localhost:5000/generate-feedbacks")
+        response = requests.get("http://35.233.164.207:3000/generate-feedbacks")
         if response.status_code == 200:
             print("Feedback received.")
             if response.json().get("publish", True):

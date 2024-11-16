@@ -1,6 +1,6 @@
 from weaviate import Client
 
-client = Client("http://localhost:8080")
+client = Client("http://35.233.164.207:8080")
 
 # Define the schema
 schema = {

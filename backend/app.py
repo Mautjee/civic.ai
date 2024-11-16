@@ -132,5 +132,27 @@ def ask():
         return jsonify({"status": 200, "message": output})
     return jsonify({"status": 200, "message": "No similar reviews found."})
 
+@app.route('/latest-feedback', methods=['GET'])
+def get_latest_feedback():
+    result = client.query.get(
+        "Feedbacks", 
+        ["text", "timestamp"]
+    ).with_sort(
+        {"path": ["timestamp"], "order": "desc"}
+    ).with_limit(1).do()
+
+    if result and result['data']['Get']['Feedbacks']:
+        latest_feedback = result['data']['Get']['Feedbacks'][0]
+        return jsonify({
+            "status": 200,
+            "message": latest_feedback['text'],
+            "timestamp": latest_feedback['timestamp']
+        })
+    
+    return jsonify({
+        "status": 404,
+        "message": "No feedback found"
+    }), 404
+
 if __name__ == '__main__':
     app.run(debug=True)

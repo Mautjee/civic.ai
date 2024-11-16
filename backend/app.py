@@ -77,7 +77,6 @@ def generate_feedbacks():
     You are a reporter about the ETH global hackathon in bangkok. You have received feedback from your users about the event.
     Make a summary of the following feedbacks.
     each feedback is separated by a pipe (|) character.
-    your summary should be concise in a tweet-like format, with a maximum of 280 characters.
     """
 
     template = """

@@ -1,15 +1,14 @@
-import { useNouns } from "@/hooks/nouns";
+import { Nouns_API } from "@/constants";
 import React from "react";
 
-
 const Noun: React.FC<{}> = () => {
-    const { data } = useNouns();
   return (
     <div>
       <div>
-        <img height="250" src={data} alt="Noun" /> 
+        <img height="250" src={Nouns_API} alt="Noun" />
       </div>
     </div>
   );
 };
-export  default Noun;
+export default Noun;
+

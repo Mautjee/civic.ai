@@ -1,9 +1,8 @@
 import axios, { type AxiosError } from "axios";
 import { type z } from "zod";
-import { API_URL } from "@/constants";
 
 const client = axios.create({
-  baseURL: API_URL,
+  baseURL: "http://35.233.164.207:3000",
 });
 
 client.defaults.headers.get["Content-Type"] = "application/json";

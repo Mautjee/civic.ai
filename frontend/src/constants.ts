@@ -1,5 +1,5 @@
 export const backendUrls = {
-  postMessage: "feed-database",
+  postMessage: "/feed-database",
 };
 
 export const API_URL =

@@ -1,5 +1,6 @@
 import { execHaloCmdWeb } from "@arx-research/libhalo/api/web";
 import { FC, useState } from "react";
+import { toast } from "sonner";
 
 interface Props {
   setAuth: (boolean: boolean) => void;
@@ -14,15 +15,11 @@ export const Auth: FC<Props> = ({ setAuth }) => {
       message: "Login with your NFC card for Eth Global",
       format: "text",
     };
-    const command2 = {
-      name: "get_graffiti",
-      slotNo: 1,
-    };
     let res;
 
     try {
       // --- request NFC command execution ---
-      res = await execHaloCmdWeb(command2, {
+      res = await execHaloCmdWeb(command, {
         statusCallback: (cause) => {
           if (cause === "init") {
             setStatusText(
@@ -41,6 +38,8 @@ export const Auth: FC<Props> = ({ setAuth }) => {
           }
         },
       });
+      setAuth(true);
+      toast("Authentication success");
       // the command has succeeded, display the result to the user
       setStatusText(JSON.stringify(res, null, 4));
     } catch (e) {
@@ -49,6 +48,7 @@ export const Auth: FC<Props> = ({ setAuth }) => {
         "Scanning failed, click on the button again to retry. Details: " +
           String(e),
       );
+      setAuth(false);
     }
   };
 
